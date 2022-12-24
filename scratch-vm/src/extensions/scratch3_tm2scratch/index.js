@@ -575,8 +575,14 @@ class Scratch3TM2ScratchBlocks {
      * @return {Promise} - A Promise that resolves after loaded.
      */
     loadImageClassificationModelFromURL (url) {
+        if (!ModelUrlRegex.test(url)) {
+            return Promise.reject(new Error('Invalid model URL'));
+        }
+        const modelId = ModelUrlRegex.exec(url)[1];
+        const metadataUrl = `https://storage.googleapis.com/tm-model/${modelId}/metadata.json?${Date.now()}`;
+        const modelUrl = `https://storage.googleapis.com/tm-model/${modelId}/model.json?${Date.now()}`;
         return new Promise(resolve => {
-            fetch(`${url}metadata.json`)
+            fetch(metadataUrl)
                 .then(res => res.json())
                 .then(metadata => {
                     if (url === this.imageModelUrl &&
@@ -584,7 +590,7 @@ class Scratch3TM2ScratchBlocks {
                         log.info(`image model already loaded: ${url}`);
                         resolve();
                     } else {
-                        ml5.imageClassifier(`${url}model.json`)
+                        ml5.imageClassifier(modelUrl)
                             .then(classifier => {
                                 this.imageModelUrl = url;
                                 this.imageMetadata = metadata;
@@ -611,8 +617,14 @@ class Scratch3TM2ScratchBlocks {
      * @return {Promise} - A Promise that resolves after loaded.
      */
     loadSoundClassificationModelFromURL (url) {
+        if (!ModelUrlRegex.test(url)) {
+            return Promise.reject(new Error('Invalid model URL'));
+        }
+        const modelId = ModelUrlRegex.exec(url)[1];
+        const metadataUrl = `https://storage.googleapis.com/tm-model/${modelId}/metadata.json?${Date.now()}`;
+        const modelUrl = `https://storage.googleapis.com/tm-model/${modelId}/model.json?${Date.now()}`;
         return new Promise(resolve => {
-            fetch(`${url}metadata.json`)
+            fetch(metadataUrl)
                 .then(res => res.json())
                 .then(metadata => {
                     if (url === this.soundModelUrl &&
@@ -620,7 +632,7 @@ class Scratch3TM2ScratchBlocks {
                         log.info(`sound model already loaded: ${url}`);
                         resolve();
                     } else {
-                        ml5.soundClassifier(`${url}model.json`)
+                        ml5.soundClassifier(modelUrl)
                             .then(classifier => {
                                 this.soundModelUrl = url;
                                 this.soundMetadata = metadata;
